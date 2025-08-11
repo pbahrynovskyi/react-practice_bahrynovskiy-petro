@@ -54,7 +54,7 @@ function getFilteredProducts(
   });
 }
 
-export const App = () => {
+export function App() {
   const [checkedUserTop, setCheckedUserTop] = useState('All');
   const [inputValue, setInputValue] = useState('');
   const [chosenCategories, setChosenCategories] = useState([]);
@@ -97,6 +97,9 @@ export const App = () => {
                 <a
                   key={user.name}
                   href="#/"
+                  {...(user.name === 'All'
+                    ? { 'data-cy': 'FilterAllUsers' }
+                    : { 'data-cy': 'FilterUser' })}
                   onClick={() => {
                     setCheckedUserTop(user.name);
                   }}
@@ -114,6 +117,7 @@ export const App = () => {
                   className="input"
                   placeholder="Search"
                   value={inputValue}
+                  data-cy="SearchField"
                   onChange={e => setInputValue(e.target.value)}
                 />
                 <span className="icon is-left">
@@ -167,6 +171,7 @@ export const App = () => {
               <a
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                data-cy="ResetAllButton"
                 onClick={() => {
                   resetAllFilters();
                 }}
@@ -265,4 +270,4 @@ export const App = () => {
       </div>
     </div>
   );
-};
+}
