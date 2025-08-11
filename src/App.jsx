@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react';
 import './App.scss';
-
+import { useState } from 'react';
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
 import productsFromServer from './api/products';
+
+import cn from 'classnames';
 
 const products = productsFromServer.map(product => {
   const category = categoriesFromServer.find(
@@ -30,7 +31,11 @@ function getFilteredProducts(products) {
 }
 
 export const App = () => {
+  const [checkedUserTop, setCheckedUserTop] = useState('All');
+  const [inputValue, setInputValue] = useState('');
+
   const productsToShow = getFilteredProducts(products);
+
   console.log(`productsToShow - `, productsToShow);
 
   return (
@@ -51,7 +56,11 @@ export const App = () => {
                 User 1
               </a>
 
-              <a data-cy="FilterUser" href="#/" className="is-active">
+              <a
+                data-cy="FilterUser"
+                href="#/"
+                className={cn({ 'is-active': false })}
+              >
                 User 2
               </a>
 
@@ -188,13 +197,30 @@ export const App = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
+              {productsToShow.map(product => {
+                return (
+                  <tr data-cy="Product">
+                    <td className="has-text-weight-bold" data-cy="ProductId">
+                      {product.id}
+                    </td>
+
+                    <td data-cy="ProductName">{product.productName}</td>
+                    <td data-cy="ProductCategory">{`${product.categoryIcon} - ${product.categoryTitle}`}</td>
+
+                    <td data-cy="ProductUser" className="has-text-link">
+                      {product.userName}
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {/* <tr data-cy="Product">
                 <td className="has-text-weight-bold" data-cy="ProductId">
                   1
                 </td>
 
                 <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                <td data-cy="ProductCategory"></td>
 
                 <td data-cy="ProductUser" className="has-text-link">
                   Max
@@ -225,7 +251,7 @@ export const App = () => {
                 <td data-cy="ProductUser" className="has-text-link">
                   Roma
                 </td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
