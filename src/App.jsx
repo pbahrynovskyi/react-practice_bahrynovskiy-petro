@@ -33,10 +33,17 @@ function getFilteredProducts(products) {
 export const App = () => {
   const [checkedUserTop, setCheckedUserTop] = useState('All');
   const [inputValue, setInputValue] = useState('');
+  const [chosenCategories, setChosenCategories] = useState([]);
 
   const productsToShow = getFilteredProducts(products);
 
   console.log(`productsToShow - `, productsToShow);
+
+  const resetAllFilters = () => {
+    setCheckedUserTop('All');
+    setInputValue('');
+    setChosenCategories([]);
+  };
 
   return (
     <div className="section">
@@ -46,27 +53,19 @@ export const App = () => {
         <div className="block">
           <nav className="panel">
             <p className="panel-heading">Filters</p>
-
             <p className="panel-tabs has-text-weight-bold">
-              <a data-cy="FilterAllUsers" href="#/">
-                All
-              </a>
-
-              <a data-cy="FilterUser" href="#/">
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className={cn({ 'is-active': false })}
-              >
-                User 2
-              </a>
-
-              <a data-cy="FilterUser" href="#/">
-                User 3
-              </a>
+              {[{ name: 'All' }, ...usersFromServer].map(user => (
+                <a
+                  key={user.name}
+                  href="#/"
+                  onClick={() => {
+                    setCheckedUserTop(user.name);
+                  }}
+                  className={cn({ 'is-active': checkedUserTop === user.name })}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -97,41 +96,42 @@ export const App = () => {
             <div className="panel-block is-flex-wrap-wrap">
               <a
                 href="#/"
-                data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                onClick={() => {
+                  toggleCategory('all');
+                }}
+                className={cn('button mr-2 my-1', {
+                  'is-success': true,
+                  'is-outlined': chosenCategories.length > 0,
+                  'is-info': chosenCategories.length === 0,
+                })}
               >
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 4
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  key={category.id}
+                  href="#/"
+                  onClick={e => {
+                    e.preventDefault();
+                    toggleCategory(category.id);
+                  }}
+                  className={cn('button mr-2 my-1', {
+                    'is-info': chosenCategories.includes(category.id),
+                  })}
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
               <a
-                data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={() => {
+                  resetAllFilters();
+                }}
               >
                 Reset all filters
               </a>
@@ -207,7 +207,13 @@ export const App = () => {
                     <td data-cy="ProductName">{product.productName}</td>
                     <td data-cy="ProductCategory">{`${product.categoryIcon} - ${product.categoryTitle}`}</td>
 
-                    <td data-cy="ProductUser" className="has-text-link">
+                    <td
+                      data-cy="ProductUser"
+                      className={cn({
+                        'has-text-link': product.userSex === 'm',
+                        'has-text-danger': product.userSex === 'f',
+                      })}
+                    >
                       {product.userName}
                     </td>
                   </tr>
